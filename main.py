@@ -87,7 +87,8 @@ def main():
         os.makedirs(output_dir, exist_ok=True)
     
     # For the intermediate character images (the classification function also does this, but it's good practice)
-    os.makedirs(args.intermediate_dir, exist_ok=True)
+    if args.intermediate_dir:
+        os.makedirs(args.intermediate_dir, exist_ok=True)
 
 
     # --- Start the Pipeline ---
