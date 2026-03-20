@@ -226,11 +226,12 @@ def assign_classes(probabilities):
 
     return assigned_sample_indices, assigned_probabilities, assigned_class_indices
 
-def classify_characters(list_of_char_images, model_path="", OUTPUT_PATH=""):
+def classify_characters(list_of_char_images, model, OUTPUT_PATH=""):
     """
     Predict the class of each character image using a pre-trained model.
     Args:
         list_of_char_images (list): List of character images to predict.
+        model: Pre-trained model.
         OUTPUT_PATH(str): Path to save the predicted images.
     Returns:
         list: A list of tuples, where each tuple is (character_string, numpy.ndarray)    
@@ -259,9 +260,6 @@ def classify_characters(list_of_char_images, model_path="", OUTPUT_PATH=""):
     if image_tensors:
         batch_tensor = torch.stack(image_tensors)
 
-        model = ResInceptionNet(num_classes=52)
-        model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
-
         model.eval()
         with torch.inference_mode():
             outputs = model(batch_tensor)
@@ -283,7 +281,15 @@ def classify_characters(list_of_char_images, model_path="", OUTPUT_PATH=""):
         return [tuple()]
 
 if __name__=="__main__":
-    from character_segmentation import segment_characters
+    from character_segmentation import SC_main
+    
+    MODEL_PATH = "resources/best_ResInceptionNet_model0.8811.pth"
+    MODEL = ResInceptionNet(num_classes=52)
+    MODEL.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
 
-    list_of_char_images = segment_characters("resources/good_example.jpg")
-    char_images = classify_characters(list_of_char_images, model_path="resources/best_ResInceptionNet_model0.8811.pth", OUTPUT_PATH="predicted characters")
+    list_of_char_images = SC_main(image_file="examples/good_example.jpg")
+
+    output_dir = "predicted characters"
+    char_images = classify_characters(list_of_char_images, model=MODEL, OUTPUT_PATH=output_dir)
+
+    print(f"{len(list_of_char_images)} classified characters are saved in folder: {output_dir}.")
