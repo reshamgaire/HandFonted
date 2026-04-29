@@ -79,6 +79,10 @@ def make_uniform_thickness(image, output_height=100, target_thickness=7):
     img_resized = cv2.resize(image, (output_width, output_height), interpolation=cv2.INTER_LANCZOS4)
     _, img_resized_binary = cv2.threshold(img_resized, 127, 255, cv2.THRESH_BINARY)
 
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))    
+    img_resized_binary = cv2.morphologyEx(img_resized_binary, cv2.MORPH_OPEN, kernel)
+    img_resized_binary = cv2.morphologyEx(img_resized_binary, cv2.MORPH_CLOSE, kernel)
+
     skeleton_input_bool = img_resized_binary > 127
     skeleton_bool = skeletonize(skeleton_input_bool)
     
@@ -204,9 +208,24 @@ def update_font_from_images(
 
             height_factor = original_height/resized_height
             resized_thickness = int(desired_thickness/height_factor)
-            binary_image = make_uniform_thickness(image,output_height=resized_height, target_thickness=resized_thickness)
+            binary_image = make_uniform_thickness(image, output_height=resized_height, target_thickness=resized_thickness)
 
-            contours = find_contours(binary_image, level=0.5)
+            blurred_image = cv2.GaussianBlur(binary_image, (5, 5), 0)
+            raw_contours = find_contours(blurred_image, level=127.5)
+            if not raw_contours:
+                continue
+
+            contours = []
+            epsilon = 0.75  
+            for contour_pts in raw_contours:
+                contour_cv = contour_pts.reshape(-1, 1, 2).astype(np.float32)
+                
+                simplified = cv2.approxPolyDP(contour_cv, epsilon, closed=True)
+                simplified = simplified.reshape(-1, 2)
+                
+                if len(simplified) >= 3:
+                    contours.append(simplified)
+
             if not contours:
                 continue
 
