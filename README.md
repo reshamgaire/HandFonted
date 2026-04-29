@@ -23,8 +23,8 @@ The transformation from pixels to a font file happens in three distinct stages:
 * **Global Assignment:** Unlike standard OCR that predicts characters independently, HandFonted uses the **Hungarian Algorithm** (`linear_sum_assignment`) to map segmented images to the 52 classes (A-Z, a-z). This ensures an optimal, one-to-one mapping for the entire alphabet.
 
 ### 3. Font Engineering (`font_creation.py`)
-* **Stroke Normalization:** To ensure the font looks cohesive, raw strokes are processed using **Skeletonization** and **Distance Transforms** to achieve a user-defined uniform thickness.
-* **Vectorization:** Character contours are extracted and converted into quadratic Bézier curves.
+* **Stroke Normalization:** To ensure the font looks cohesive, raw character images first undergo **morphological smoothing** to remove edge anomalies and noise. They are then processed using **Skeletonization** and **Distance Transforms** to achieve a user-defined uniform stroke thickness.
+* **Vectorization:** Character outlines are extracted with sub-pixel precision, simplified using the **Ramer-Douglas-Peucker algorithm** (to remove wobbly edges), and converted into smooth vector glyphs. 
 * **Auto-Metrics:** The system dynamically calculates **Left/Right Side Bearings (LSB/RSB)** and Advance Widths based on the character's "ink" distribution to ensure natural letter spacing.
 
 ---
