@@ -54,8 +54,8 @@ def main():
     parser.add_argument(
         '--base-font',
         type=str,
-        default="resources/arial.ttf",
-        help='Path to a base .ttf font file (e.g., Arial.ttf) to use for character metrics and as a template.'
+        default="resources/Arimo-Regular.ttf",
+        help='Path to a base .ttf font file (e.g., Arimo-Regular.ttf) to use for character metrics and as a template.'
     )
 
     parser.add_argument(

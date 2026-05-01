@@ -303,7 +303,7 @@ if __name__ == "__main__":
         prepared_char_image_list.append((char_val, image))
     
     update_font_from_images(
-        font_path="FINAL/arial.ttf",
+        font_path="FINAL/Arimo-Regular.ttf",
         char_image_list = prepared_char_image_list,
         output_path="FINAL/my_font.ttf",
         new_family_name="My Handwriting",
